@@ -1,6 +1,8 @@
 # coding=utf-8
 import json
 
+import uuid
+
 def return_content(code, result=None, message=None):
     if result is None:
         result = {}
@@ -14,3 +16,6 @@ def return_content(code, result=None, message=None):
         indent=4,
         ensure_ascii=False
     )
+
+def get_uuid():
+    return uuid.uuid4().hex
