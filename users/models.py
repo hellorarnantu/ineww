@@ -3,13 +3,10 @@
 __author__ = 'xiaowang'
 __date__ = '17-3-14'
 
-
 from django.db import models
 from django.contrib.auth.admin import User
 from django.db.models import Q
-from django.db import transaction
 import os
-import random
 from utils.common_utils import get_uuid
 from utils.time_utils import datetime_to_timestamp
 
@@ -18,7 +15,7 @@ class UserModel(models.Model):
     userId = models.CharField(default=get_uuid, max_length=32, primary_key=True, null=False, blank=False)  # 用户id
     user = models.ForeignKey(User, db_constraint=False, verbose_name=u'AUTH_USER')  #
     phone = models.CharField(max_length=20, default='', db_index=True, blank=True, verbose_name=u'手机号')
-    email = models.CharField(max_length=50, default='', db_index=True, blank=True, verbose_name=u'邮箱')
+    # email = models.CharField(max_length=50, default='', db_index=True, blank=True, verbose_name=u'邮箱')
     username = models.CharField(max_length=50, default='', db_index=True, unique=True, verbose_name=u'用户昵称')
     gender = models.IntegerField(default=2, verbose_name=u'性别 0:男;1：女;2：未知')
     signature = models.CharField(max_length=100, default='', blank=True, verbose_name=u'个性签名')
@@ -74,8 +71,8 @@ class UserModel(models.Model):
             ('view', u'查看用户')
         )
 
-class DoUserModel(object):
 
+class DoUserModel(object):
     @staticmethod
     def get_by_id(account):
         q = Q(phone=account)
