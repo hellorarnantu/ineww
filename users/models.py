@@ -15,13 +15,13 @@ class UserModel(models.Model):
     userId = models.CharField(default=get_uuid, max_length=32, primary_key=True, null=False, blank=False)  # 用户id
     user = models.ForeignKey(User, db_constraint=False, verbose_name=u'AUTH_USER')  #
     phone = models.CharField(max_length=20, default='', db_index=True, blank=True, verbose_name=u'手机号')
-    # email = models.CharField(max_length=50, default='', db_index=True, blank=True, verbose_name=u'邮箱')
     username = models.CharField(max_length=50, default='', db_index=True, unique=True, verbose_name=u'用户昵称')
     gender = models.IntegerField(default=2, verbose_name=u'性别 0:男;1：女;2：未知')
     signature = models.CharField(max_length=100, default='', blank=True, verbose_name=u'个性签名')
     balance = models.DecimalField(default=0, verbose_name=u'余额', max_digits=10, decimal_places=2)
     avatar = models.CharField(default='', max_length=128, verbose_name=u'头像')
     mark = models.TextField(default='', blank=True, verbose_name=u'备注')
+
     is_delete = models.BooleanField(default=False, db_index=True, verbose_name=u'是否黑名单')  # 是否删除 false表示未删除
     qq_id = models.CharField(max_length=32, default='', db_index=True, blank=True, verbose_name=u'QQ号')
     wechat_id = models.CharField(max_length=32, default='', db_index=True, blank=True, verbose_name=u'微信号')
@@ -48,7 +48,11 @@ class UserModel(models.Model):
         }
 
     def detail(self):
-        designation = self.userdesignationmodel_set.filter(is_selected=True)
+        return self.index().update(
+            {"balance":self.balance}
+        )
+
+    def index(self):
         return {
             'uid': self.userId,
             'phone': self.phone,
@@ -56,8 +60,7 @@ class UserModel(models.Model):
             'avatar': self.avatar_url,
             'username': self.username,
             'gender': self.gender,
-            'signature': self.signature,
-            'designation': designation[0].designations.name if designation else '',
+            'signature': self.signature
         }
 
     class Meta:
@@ -73,8 +76,15 @@ class UserModel(models.Model):
 
 
 class DoUserModel(object):
+
     @staticmethod
-    def get_by_id(account):
+    def get_by_account(account):
         q = Q(phone=account)
-        q |= Q(email=account)
         return UserModel.objects.filter(q).first()
+
+    @staticmethod
+    def get_by_id(uid):
+        try:
+            return UserModel.objects.get(userId=uid)
+        except UserModel.DoesNotExist:
+            return None

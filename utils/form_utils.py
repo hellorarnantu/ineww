@@ -30,18 +30,14 @@ def dec_validate_form(form_class):
             if request.method in ['PUT', 'POST']:
                 try:
                     setattr(request, method, json.loads(request.body if request.body else '{}'))
-                    # request.PUT = json.loads(request.body if request.body else '{}')
                 except ValueError:
                     return HttpResponseBadRequest(return_content(code='400010'))
 
             data = getattr(request, request.method)
-            # if not data:
-            #     return HttpResponse(status=422, content=return_content(code='422001', result=data))
-            # print data
             flag, data = validate_form(form_class, data)
             if not flag:
                 return HttpResponse(status=422, content=return_content(code='422001', result=data))
-            request.data = data
+            request.param =data
             return fun(view, request, *args, **kwargs)
 
         return wrapper
