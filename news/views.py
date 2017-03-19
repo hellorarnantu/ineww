@@ -10,6 +10,7 @@ from .forms import NewsPageForm
 from django.http import HttpResponse
 from utils.common_utils import return_content
 
+
 class NewsView(View):
     def get(self, request, news_id):
         news = NewsModel.objects.filter(
@@ -22,24 +23,21 @@ class NewsView(View):
 
 
 class NewssView(View):
-
-
     @dec_validate_form(NewsPageForm)
     def get(self, request):
-        page = request.data['page']
-        page_per = request.data['page_per']
+        page = request.param['page']
+        page_per = request.param['page_per']
         query_list = NewsModel.objects.all()
         count = query_list.count()
-        news_list= query_list.only(
+        news_list = query_list.only(
             "news_id", "title", "image", "author", "created_time", "keywords", "source", "brief", "category"
-        ).order_by("-created_time")[(page-1)*page_per:page*page_per]
+        ).order_by("-created_time")[(page - 1) * page_per:page * page_per]
         result = [
             news.info() for news in news_list
-        ]
+            ]
         return HttpResponse(return_content("200001", {
-            "page":page,
-            "page_per":page_per,
-            "count":count,
+            "page": page,
+            "page_per": page_per,
+            "count": count,
             "result": result
         }))
-
