@@ -88,13 +88,13 @@ WSGI_APPLICATION = 'ineww.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('CALABASH_DATABASE_NAME', 'ineww'),
-        'USER': os.environ.get('CALABASH_DATABASE_USER', 'root'),
-        'PASSWORD': os.environ.get('CALABASH_DATABASE_PASSWORD', 'root'),
-        'HOST': os.environ.get('CALABASH_DATABASE_HOST', 'localhost'),
-        'PORT': os.environ.get('CALABASH_DATABASE_PORT', '3306'),
+        'NAME': os.environ.get('INEWW_DATABASE_NAME', 'ineww'),
+        'USER': os.environ.get('INEWW_DATABASE_USER', 'root'),
+        'PASSWORD': os.environ.get('INEWW_DATABASE_PASSWORD', 'root'),
+        'HOST': os.environ.get('INEWW_DATABASE_HOST', 'localhost'),
+        'PORT': os.environ.get('INEWW_DATABASE_PORT', '3306'),
         'TEST': {
-            'NAME': 'test_calabash'
+            'NAME': 'test_ineww'
         }
     }
 }
@@ -147,3 +147,57 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'standard': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'null': {
+            'class': 'logging.NullHandler',
+        },
+        'default': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': '/var/log/ineww/ineww.log',
+            'backupCount': 5,
+        },
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['default', 'console', 'mail_admins'],
+            'level': 'WARNING',
+            'propagate': True
+        },
+        'django': {
+            'handlers': ['default', 'console'],
+            'propagate': True,
+            'level': 'ERROR',
+        },
+        'django.request': {
+            'handlers': ['default', 'console'],
+            'level': 'WARNING',
+            'propagate': False,
+        }
+    }
+}
