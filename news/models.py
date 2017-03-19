@@ -22,6 +22,7 @@ class NewsModel(models.Model):
     disagree_number = models.IntegerField(default=0)
     category = models.IntegerField(default=0)
     brief = models.TextField(null=True, blank=True)
+    md5 = models.CharField(max_length=32, null=True, db_index=True)
 
     def __unicode__(self):
         return self.title
@@ -32,23 +33,23 @@ class NewsModel(models.Model):
 
     def info(self):
         return {
-            "news_id":self.news_id,
-            "title":self.title,
-            "image":self.image,
-            "author":self.author,
-            "created_time":self.created_timestamp,
-            "keywords":self.keywords,
-            "source":self.source,
-            "brief":self.brief,
-            "category":self.category
+            "news_id": self.news_id,
+            "title": self.title,
+            "image": self.image,
+            "author": self.author,
+            "created_time": self.created_timestamp,
+            "keywords": self.keywords,
+            "source": self.source,
+            "brief": self.brief,
+            "category": self.category
         }
 
     def detail(self):
         info = self.info()
         info.update(
             {
-                "original":self.original,
-                "content":self.content
+                "original": self.original,
+                "content": self.content
             }
         )
         return info

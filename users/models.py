@@ -15,12 +15,16 @@ class UserModel(models.Model):
     userId = models.CharField(default=get_uuid, max_length=32, primary_key=True, null=False, blank=False)  # 用户id
     user = models.ForeignKey(User, db_constraint=False, verbose_name=u'AUTH_USER')  #
     phone = models.CharField(max_length=20, default='', db_index=True, blank=True, verbose_name=u'手机号')
-    username = models.CharField(max_length=50, default='', db_index=True, unique=True, verbose_name=u'用户昵称')
+    username = models.CharField(max_length=50, default='', db_index=True, verbose_name=u'用户昵称')
     gender = models.IntegerField(default=2, verbose_name=u'性别 0:男;1：女;2：未知')
     signature = models.CharField(max_length=100, default='', blank=True, verbose_name=u'个性签名')
     balance = models.DecimalField(default=0, verbose_name=u'余额', max_digits=10, decimal_places=2)
     avatar = models.CharField(default='', max_length=128, verbose_name=u'头像')
     mark = models.TextField(default='', blank=True, verbose_name=u'备注')
+    company = models.CharField(default='', blank=True, verbose_name=u"公司", max_length=128)
+    birthday = models.DateField(blank=True, null=True)
+    tags = models.CharField(default='', blank=True, verbose_name=u"标签", max_length=32)
+    address = models.CharField(default='', blank=True, verbose_name=u'住址', max_length=128)
 
     is_delete = models.BooleanField(default=False, db_index=True, verbose_name=u'是否黑名单')  # 是否删除 false表示未删除
     qq_id = models.CharField(max_length=32, default='', db_index=True, blank=True, verbose_name=u'QQ号')
@@ -41,22 +45,22 @@ class UserModel(models.Model):
         return {
             'uid': self.userId,
             'phone': self.phone,
-            'email': self.email,
             'username': self.username,
             'gender': self.gender,
             'created_time': datetime_to_timestamp(self.created_time),
         }
 
     def detail(self):
-        return self.index().update(
-            {"balance":self.balance}
+        _detail = self.index()
+        _detail.update(
+            {"balance": str(self.balance)}
         )
+        return _detail
 
     def index(self):
         return {
             'uid': self.userId,
             'phone': self.phone,
-            'email': self.email,
             'avatar': self.avatar_url,
             'username': self.username,
             'gender': self.gender,
@@ -66,7 +70,6 @@ class UserModel(models.Model):
     class Meta:
         verbose_name_plural = u'用户管理'
         db_table = 'user'
-        unique_together = ('phone', 'email')
         default_permissions = ()
         permissions = (
             ('delete', u'删除用户'),
@@ -76,7 +79,6 @@ class UserModel(models.Model):
 
 
 class DoUserModel(object):
-
     @staticmethod
     def get_by_account(account):
         q = Q(phone=account)
@@ -88,3 +90,7 @@ class DoUserModel(object):
             return UserModel.objects.get(userId=uid)
         except UserModel.DoesNotExist:
             return None
+
+    @staticmethod
+    def is_exist_by_phone(phone):
+        return UserModel.objects.filter(phone=phone).exists()

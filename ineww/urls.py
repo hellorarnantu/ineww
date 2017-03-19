@@ -19,4 +19,7 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/ineww/manage/', admin.site.urls),
     url(r'^ineww/', include('news.urls')),
+    url(r'^ineww/', include('users.urls')),
+    url(r'^ineww/', include('session.urls')),
+    url(r'^ineww/', include('codes.urls')),
 ]

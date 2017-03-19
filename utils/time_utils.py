@@ -3,6 +3,7 @@
 import time
 import datetime
 
+
 def datetime_to_timestamp(d):
     if not d:
         return ''
@@ -13,7 +14,10 @@ def datetime_to_timestamp(d):
 
 
 def timestamp_to_datetime(num, status=True):
-
     if status:
         num = float(num) / 1000
     return datetime.datetime.fromtimestamp(int(num))
+
+
+if __name__ == '__main__':
+    print timestamp_to_datetime(time.time() * 1000)
