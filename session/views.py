@@ -29,7 +29,7 @@ class SessionView(View):
             return HttpResponse(status=401, content=return_content("401003"))
         login(request, user.user)
         token, _ = DoAccessTokenModel.generate_token(user.userId)
-        return HttpResponse(return_content("201001", {
+        return HttpResponse(return_content("200001", {
             "token": token.detail(),
             "user": user.detail()
         }))
